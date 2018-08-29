@@ -7,12 +7,13 @@ use App\Product;
 use App\ProductCategory;
 use App\StockPurchase;
 use App\Supplyer;
+use App\Supplyerpayment;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use DB;
 use Session;
 use PDF;
-session_start();
 
 class StockController extends Controller
 {
@@ -33,9 +34,6 @@ class StockController extends Controller
     {
         $products = ProductCategory::all();
         $brand = Brand::all();
-
-
-
         return view('add_purchase',compact('products'),compact('brand'));
 
     }
@@ -60,8 +58,6 @@ class StockController extends Controller
             $data['boxID']=  $input['data1'][$max-1]['boxID'];
             $data['brandID'] =  $input['data1'][$i]['Brand'];
             $data['styleID'] =  $input['data1'][$i]['style'];
-
-            $data['employee'] =  Session::get('employeeId');
             $data->save();
 
             $totalQT=$totalQT+$input['data1'][$i]['quantity'];
@@ -74,9 +70,7 @@ class StockController extends Controller
         $data2['supplyerID']=$input['data1'][$max-1]['supplyer'];
         $data2['boxID']=$input['data1'][$max-1]['boxID'];
         $data2['price']=$totalPrice;
-        $data2['employeeID'] = Session::get('employeeId');
-
-        DB::table('Purchase')->insert($data2);
+        DB::table('purchase')->insert($data2);
 
 
         $supplyerID = $input['data1'][$max-1]['supplyer'];
@@ -115,7 +109,6 @@ class StockController extends Controller
             $data['brandID'] =  $input['data1'][$i]['Brand'];
             $data['styleID'] =  $input['data1'][$i]['style'];
 
-            $data['employee'] =  Session::get('employeeId');
             $data->save();
 
             $totalQT=$totalQT+$input['data1'][$i]['quantity'];
@@ -129,7 +122,6 @@ class StockController extends Controller
         $data2['availableStock']=$totalQT+$dataPurhcase[0]->availableStock;
         $data2['price']=$totalPrice+$dataPurhcase[0]->price;
         $data2['statusPaid']=-1;
-        $data2['employeeID'] = Session::get('employeeId');
         StockPurchase::where('boxID',$input['data1'][$max-1]['boxID'])->update($data2);
 
         $supplyerID = $dataPurhcase[0]->supplyerID;
@@ -153,11 +145,10 @@ class StockController extends Controller
     public function pdf($ID){
         $Invoice = StockPurchase::with(['products.styles','supplyer'])->where('boxID',$ID)->get();
         $paymenthist= Supplyerpayment::where('boxID',$ID)->sum('amount');
-        return view("PDF.pdfstock",compact(['Invoice','paymenthist']));
+        //return view("PDF.pdfstock",compact(['Invoice','paymenthist']));
 
-        // return $Invoice;
         $pdf = PDF::loadView('PDF.pdfstock',compact(['Invoice','paymenthist']));
-        return $pdf->download('Purchase_invoice_'.$ID.'.pdf');
+        return $pdf->stream('Purchase_invoice_'.$ID.'.pdf');
     }
     public function viewDetails($ID)
     {

@@ -15,7 +15,7 @@ class Brand extends Model
     protected $table = 'products_brand';
 
     protected $fillable = [
-        'name','publication_status','date','ID'
+        'name','publication_status','date','ID','brandID'
     ];
 
 

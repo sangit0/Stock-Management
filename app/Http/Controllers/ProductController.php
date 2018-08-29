@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use DB;
 use Session;
-session_start();
 
 class ProductController extends Controller
 {
@@ -20,7 +19,7 @@ class ProductController extends Controller
      */
     public function __construct() {
 
-    
+
     }
 
 
@@ -34,8 +33,6 @@ class ProductController extends Controller
     {
         $style = new ProductCategory();
         $style['name'] = $request->data;
-        $style['employeeID'] = Session::get('employeeId');
-
         $style->save();
 
     }
@@ -50,20 +47,17 @@ class ProductController extends Controller
     public function publish($ID)
     {
         ProductCategory::find($ID)->update(['status' => 1]);
-
         return Redirect::to('settings');
 
     }
     public function unpublish($ID)
     {
         ProductCategory::find($ID)->update(['status' => 0]);
-
         return Redirect::to('settings');
 
     }
     public function getProductAll(){
         $all_published_product = \App\Product::where('availableQty','!=',0)->with(['brand','styles','stockID'])->get();
         return $all_published_product;
-
     }
 }

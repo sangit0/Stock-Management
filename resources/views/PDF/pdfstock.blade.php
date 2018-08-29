@@ -16,10 +16,10 @@
 
   <div id="company" class="clearfix" style="padding-right: 50px;">
 
-    <div>Red button Readymade Garments<br> Trading LLC</div>
-    <div>House 40, Road 7/C, sector 9
+    <div>Hello dummy name<br> Trading LLC</div>
+    <div>Bashundhara 40, Road 7/C, sector 9
     </div>
-    <div>Uttara, Dhaka</div>
+    <div>Bashundhara, Dhaka</div>
 
     {{--<div><a href="mailto:company@example.com">company@example.com</a></div>--}}
   </div>

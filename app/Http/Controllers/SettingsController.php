@@ -31,10 +31,13 @@ class SettingsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     public function add_brand() {
+public function index() {
       return view('setting');
  }
-
+ public function getBrand()
+ {
+     return Brand::all();
+ }
 // brand controller functions
  public function save_brand(Request $request) {
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,25 +39,50 @@
             animation: fadein 0.5s, fadeout 0.5s 2.5s;
         }
 
-        @-webkit-keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
+        @-webkit-keyframesfadein {
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
         }
 
-        @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
+        @keyframesfadein {
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
         }
 
-        @-webkit-keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
+        @-webkit-keyframesfadeout {
+            from {
+                bottom: 30px;
+                opacity: 1;
+            }
+            to {
+                bottom: 0;
+                opacity: 0;
+            }
         }
 
-        @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
+        @keyframesfadeout {
+            from {
+                bottom: 30px;
+                opacity: 1;
+            }
+            to {
+                bottom: 0;
+                opacity: 0;
+            }
         }
+
         .spinner {
             width: 55px;
             height: 55px;
@@ -68,10 +94,11 @@
             bottom: 0;
             position: fixed;
             display: block;
-            margin:  auto;
+            margin: auto;
         }
 
-        .double-bounce1, .double-bounce2 {
+        .double-bounce1,
+        .double-bounce2 {
             width: 100%;
             height: 100%;
             border-radius: 50%;
@@ -84,6 +111,7 @@
             -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
             animation: sk-bounce 2.0s infinite ease-in-out;
         }
+
         .double-bounce2 {
 
             background-color: #0b3e6f;
@@ -95,20 +123,28 @@
             animation-delay: -1.0s;
         }
 
-        @-webkit-keyframes sk-bounce {
-            0%, 100% { -webkit-transform: scale(0.0) }
-            50% { -webkit-transform: scale(1.0) }
+        @-webkit-keyframessk-bounce {
+            0%,
+            100% {
+                -webkit-transform: scale(0.0)
+            }
+            50% {
+                -webkit-transform: scale(1.0)
+            }
         }
 
-        @keyframes sk-bounce {
-            0%, 100% {
+        @keyframessk-bounce {
+            0%,
+            100% {
                 transform: scale(0.0);
                 -webkit-transform: scale(0.0);
-            } 50% {
-                  transform: scale(1.0);
-                  -webkit-transform: scale(1.0);
-              }
+            }
+            50% {
+                transform: scale(1.0);
+                -webkit-transform: scale(1.0);
+            }
         }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -116,7 +152,9 @@
             height: 27px;
         }
 
-        .switch input {display:none;}
+        .switch input {
+            display: none;
+        }
 
         .slider {
             position: absolute;
@@ -142,21 +180,22 @@
             transition: .4s;
         }
 
-        input:checked + .slider {
+        input:checked+.slider {
             background-color: green;
         }
 
-        input:focus + .slider {
+        input:focus+.slider {
             box-shadow: 0 0 1px #2196F3;
         }
 
-        input:checked + .slider:before {
+        input:checked+.slider:before {
             -webkit-transform: translateX(26px);
             -ms-transform: translateX(26px);
             transform: translateX(26px);
         }
 
         /* Rounded sliders */
+
         .slider.round {
             border-radius: 34px;
         }
@@ -164,241 +203,207 @@
         .slider.round:before {
             border-radius: 50%;
         }
-
-
     </style>
 
     <!-- Google Font -->
 </head>
+
 <body class="hold-transition skin-blue sidebar-mini">
-<div class="wrapper">
+    <div class="wrapper">
 
-    <header class="main-header">
-        <!-- Logo -->
-        <a href="/" class="logo">
-            <!-- mini logo for sidebar mini 50x50 pixels -->
-            {{-- <span class="logo-mini"><img src="#" width="50px" height="40px"></span> --}}
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                {{-- <span class="logo-mini"><img src="#" width="50px" height="40px"></span> --}}
 
-            <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg">Sangit</b></span>
-        </a>
-        <!-- Header Navbar: style can be found in header.less -->
-        <nav class="navbar navbar-static-top">
-            <!-- Sidebar toggle button-->
-            <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg">Sangit</b></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                 <span class="sr-only">Toggle navigation</span>
             </a>
 
-            <div class="navbar-custom-menu">
-                <ul class="nav navbar-nav">
-
-                    <!-- Notifications: style can be found in dropdown.less -->
-                    {{--<li class="dropdown notifications-menu">--}}
-                    {{--<a href="#" class="dropdown-toggle" data-toggle="dropdown">--}}
-                    {{--<i class="fa fa-bell-o"></i>--}}
-                    {{--<span class="label label-warning">10</span>--}}
-                    {{--</a>--}}
-                    {{--<ul class="dropdown-menu">--}}
-                    {{--<li class="header">You have no new notifications</li>--}}
-                    {{--<li>--}}
-                    {{--<!-- inner menu: contains the actual data -->--}}
-                    {{--<ul class="menu">--}}
-                    {{--<li>--}}
-                    {{--<a href="#">--}}
-                    {{--<i class="fa fa-users text-aqua"></i> 5 new members joined today--}}
-                    {{--</a>--}}
-                    {{--</li>--}}
-                    {{--<li>--}}
-                    {{--<a href="#">--}}
-                    {{--<i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the--}}
-                    {{--page and may cause design problems--}}
-                    {{--</a>--}}
-                    {{--</li>--}}
-                    {{--<li>--}}
-                    {{--<a href="#">--}}
-                    {{--<i class="fa fa-users text-red"></i> 5 new members joined--}}
-                    {{--</a>--}}
-                    {{--</li>--}}
-                    {{--<li>--}}
-                    {{--<a href="#">--}}
-                    {{--<i class="fa fa-shopping-cart text-green"></i> 25 sales made--}}
-                    {{--</a>--}}
-                    {{--</li>--}}
-                    {{--<li>--}}
-                    {{--<a href="#">--}}
-                    {{--<i class="fa fa-user text-red"></i> You changed your username--}}
-                    {{--</a>--}}
-                    {{--</li>--}}
-                    {{--</ul>--}}
-                    {{--</li>--}}
-                    {{--<li class="footer"><a href="#">View all</a></li>--}}
-                    {{--</ul>--}}
-                    {{--</li>--}}
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
 
 
-                    <li class="dropdown user user-menu">
+                        <li class="dropdown user user-menu">
 
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-user-circle-o"> Sangit</i></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-user-circle-o"> Admin</i></a>
 
-                        </a>
-                        <ul class="dropdown-menu">
-                            <!-- User image -->
-                            <li class="user-header">
-                                <img src="employee_images/photo_default_emplyee1.png" class="img-circle" alt="User Image">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header">
+                                    <img src="employee_images/photo_default_emplyee1.png" class="img-circle" alt="User Image">
 
-                                <p>
-                                    Sangit
-                                    <small>fb.com/sangit0</small>
-                                </p>
-                            </li>
-                            <!-- Menu Body -->
-                            <li class="user-body">
+                                    <p>
+                                        Admin
+                                        <small>github.com/sangit0</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Body -->
+                                <li class="user-body">
 
-                                <!-- /.row -->
-                            </li>
-                            <!-- Menu Footer-->
-                            <li class="user-footer">
+                                    <!-- /.row -->
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
 
-                                <div class="pull-right">
-                                    {{-- <a href="{{URL::to('/logout')}}" class="btn btn-default btn-flat">Sign out</a> --}}
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
-            <!-- Sidebar user panel -->
-            <div class="user-panel">
-                <div class="pull-left image">
-                    <img src="employee_images/photo_default_emplyee1.png" class="img-circle" alt="User Image">
+                                    <div class="pull-right">
+                                        {{-- <a href="{{URL::to('/logout')}}" class="btn btn-default btn-flat">Sign out</a> --}}
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <div class="pull-left info">
-                    <p>Sangit</p>
-                    <small>Developer</small>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="employee_images/photo_default_emplyee1.png" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="pull-left info">
+                        <p>Sangit</p>
+                        <small>Developer</small>
 
+                    </div>
                 </div>
-            </div>
 
-            <ul class="sidebar-menu" data-widget="tree">
+                <ul class="sidebar-menu" data-widget="tree">
 
 
-                <li class="treeview">
-                    <a href="#">
+                    <li class="treeview">
+                        <a href="#">
                         <i class="fa fa-files-o"></i>
                         <span>Stock</span>
                         <span class="pull-right-container">
-            </span>
+                        </span>
                     </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{{URL::to('/add-stock')}}"><i class="fa fa-clone"></i> Add stock</a></li>
-                        <li><a href="{{URL::to('/stock-manage')}}"><i class="fa fa-leaf"></i> Manage stock</a></li>
-                    </ul>
-                </li>
+                        <ul class="treeview-menu">
+                            <li><a href="{{URL::to('/add-stock')}}"><i class="fa fa-clone"></i> Add stock</a></li>
+                            <li><a href="{{URL::to('/stock-manage')}}"><i class="fa fa-leaf"></i> Manage stock</a></li>
+                        </ul>
+                    </li>
 
-                <li>
-                    <a href="{{URL::to('/settings')}}">
+                    <li>
+                        <a href="{{URL::to('/settings')}}">
                         <i class="fa fa-cogs"></i>
                         <span>Settings</span>
                         <span class="pull-right-container">
-            </span>
+                        </span>
                     </a>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-tint"></i>
+                            <span> Supplyers</span>
+                            <span class="pull-right-container">
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{URL::to('/supplyer')}}"><i class="fa fa-clone"></i> Manage supplyers</a></li>
+                            <li><a href="{{URL::to('/supplyerPayment')}}"><i class="fa fa-money"></i> Payment</a></li>
+                        </ul>
+                    </li>
+                </ul>
 
-                </li>
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
 
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active">{{Request::path()}}</li>
 
+                </ol>
+            </section>
 
+            <!-- Main content -->
+            <section class="content">
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+                <br> @yield('content')
+            </section>
+            <!-- /.content -->
+            <div id="snackbar">Data updated successfully.</div>
 
-            </ul>
-        </section>
-        <!-- /.sidebar -->
-    </aside>
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li class="active">{{Request::path()}}</li>
-
-            </ol>
-        </section>
-
-        <!-- Main content -->
-        <section class="content">
-            <div class="spinner">
-                <div class="double-bounce1"></div>
-                <div class="double-bounce2"></div>
-            </div>
-            <br>
-            @yield('content')
-        </section>
-        <!-- /.content -->
-        <div id="snackbar">Data updated successfully.</div>
-
-    </div>
-
-
-
-    <!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <div class="pull-right hidden-xs">
-            <b>Version</b> 1.0 Beta
         </div>
-        <strong>Copyright &copy; 2018 <a href="https://fb.com/sangit0">Sangit</a>.</strong> All rights
-        reserved.
-    </footer>
 
-    <!-- Add the sidebar's background. This div must be placed
+
+
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 1.0 Beta
+            </div>
+            <strong>Copyright &copy; 2018 <a href="https://github.com/sangit0">Sangit</a>.</strong> All rights reserved.
+        </footer>
+
+        <!-- Add the sidebar's background. This div must be placed
          immediately after the control sidebar -->
-    <div class="control-sidebar-bg"></div>
-</div>
-<!-- ./wrapper -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+    <!-- ./wrapper -->
 
 
 
-<script>
-    $(function () {
-        dinamicMenu();
+    <script>
+        $(function() {
+            dinamicMenu();
 
-        $(".spinner").css("display", "none");
-
-    });
-
-    $.widget.bridge('uibutton', $.ui.button);
-    $(document).ready(function(){
-        $(document).ajaxStart(function(){
-            $(".spinner").css("display", "block");
-        });
-        $(document).ajaxComplete(function(){
             $(".spinner").css("display", "none");
+
         });
 
-    });
-    function showSnakBar() {
-        var x = document.getElementById("snackbar")
-        x.className = "show";
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-    }
-    function dinamicMenu() {
-        var url = window.location;
+        $(document).ready(function() {
+            $(document).ajaxStart(function() {
+                $(".spinner").css("display", "block");
+            });
+            $(document).ajaxComplete(function() {
+                $(".spinner").css("display", "none");
+            });
 
-        $('ul.sidebar-menu a').filter(function() {
-            return this.href == url;
-        }).parent().addClass('active');
+        });
 
-        // Will only work if string in href matches with location
-        $('.treeview-menu li a[href="' + url + '"]').parent().addClass('active');
-        // Will also work for relative and absolute hrefs
-        $('.treeview-menu li a').filter(function() {
-            return this.href == url;
-        }).parent().parent().parent().addClass('active');
-    };
-</script>
+        function showSnakBar() {
+            var x = document.getElementById("snackbar")
+            x.className = "show";
+            setTimeout(function() {
+                x.className = x.className.replace("show", "");
+            }, 3000);
+        }
+
+        function dinamicMenu() {
+            var url = window.location;
+
+            $('ul.sidebar-menu a').filter(function() {
+                return this.href == url;
+            }).parent().addClass('active');
+
+            // Will only work if string in href matches with location
+            $('.treeview-menu li a[href="' + url + '"]').parent().addClass('active');
+            // Will also work for relative and absolute hrefs
+            $('.treeview-menu li a').filter(function() {
+                return this.href == url;
+            }).parent().parent().parent().addClass('active');
+        };
+    </script>
 </body>
+
 </html>

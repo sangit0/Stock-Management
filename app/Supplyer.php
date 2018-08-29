@@ -18,12 +18,18 @@ class Supplyer extends Model
     protected $fillable = [
         'name','publication_status','total_balance','paid','Adress','contact','type'
     ];
-
+    public function payment()
+    {
+        return $this->hasMany('App\Supplyerpayment', 'supplyersID', 'id');
+    }
     public function stock()
     {
         return $this->hasMany('App\StockPurchase', 'supplyerID', 'id');
     }
-
+    public function stockUnpaid()
+    {
+        return $this->hasMany('App\StockPurchase', 'supplyerID', 'id')->where('statusPaid',-1);
+    }
 
 
 
