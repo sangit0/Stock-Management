@@ -12,7 +12,7 @@ class StockPurchase extends Model
      *
      * @var array
      */
-    protected $table = 'Purchase';
+    protected $table = 'purchase';
     protected $primaryKey = 'ID';
 
     protected $fillable = [
@@ -27,8 +27,5 @@ class StockPurchase extends Model
     {
         return $this->belongsTo('App\Supplyer', 'supplyerID', 'id')->select(array('id', 'name','Adress','contact','total_balance','paid'));
     }
-
-
-
 
 }
