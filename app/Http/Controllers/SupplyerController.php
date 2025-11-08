@@ -38,7 +38,7 @@ class SupplyerController extends Controller
     {
         $supplyer = $this->supplierService->getAllSuppliers();
 
-        return view('Supplyer', compact('supplyer'));
+        return view('supplyer', compact('supplyer'));
     }
 
     /**
@@ -156,7 +156,7 @@ class SupplyerController extends Controller
     {
         $stock = StockPurchase::with('supplyer')->orderBy('statusPaid', 'asc')->get();
 
-        return view('SupplyerPayment', compact('stock'));
+        return view('supplyer_payment', compact('stock'));
     }
 
     /**

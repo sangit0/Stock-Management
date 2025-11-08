@@ -7,7 +7,7 @@ use App\Product;
 use App\ProductCategory;
 use App\StockPurchase;
 use App\Supplyer;
-use App\Supplyerpayment;
+use App\SupplyerPayment;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
@@ -49,7 +49,7 @@ class StockService
             ->where('boxID', $boxId)
             ->get();
 
-        $payments = Supplyerpayment::where('boxID', $boxId)->sum('amount');
+        $payments = SupplyerPayment::where('boxID', $boxId)->sum('amount');
 
         return [
             'invoice' => $invoice,

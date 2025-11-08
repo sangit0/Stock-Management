@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\StockPurchase;
 use App\Supplyer;
-use App\Supplyerpayment;
+use App\SupplyerPayment;
 use Illuminate\Support\Facades\DB;
 
 class SupplierService
@@ -98,7 +98,7 @@ class SupplierService
      */
     public function getPaymentsForPurchase(int $boxId)
     {
-        return Supplyerpayment::where('boxID', $boxId)
+        return SupplyerPayment::where('boxID', $boxId)
             ->with('supplyer')
             ->with('paymentMethod')
             ->get();
@@ -108,14 +108,14 @@ class SupplierService
      * Persist a payment and update related balances inside a transaction.
      *
      * @param  array  $data
-     * @return \App\Supplyerpayment
+     * @return \App\SupplyerPayment
      */
     public function recordPayment(array $data)
     {
         return DB::transaction(function () use ($data) {
             $supplier = $this->getSupplierForUpdate($data['supplyer_id']);
 
-            $payment = new Supplyerpayment();
+            $payment = new SupplyerPayment();
             $payment->fill([
                 'amount' => (int) $data['amount'],
                 'supplyersID' => $supplier->id,

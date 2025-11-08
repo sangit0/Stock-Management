@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSupplyerpayments extends Migration
+class CreateSupplyerPayments extends Migration
 {
     /**
      * Run the migrations.

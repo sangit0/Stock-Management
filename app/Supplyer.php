@@ -20,7 +20,7 @@ class Supplyer extends Model
     ];
     public function payment()
     {
-        return $this->hasMany('App\Supplyerpayment', 'supplyersID', 'id');
+        return $this->hasMany('App\SupplyerPayment', 'supplyersID', 'id');
     }
     public function stock()
     {

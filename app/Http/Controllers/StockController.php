@@ -80,7 +80,7 @@ class StockController extends Controller
     {
         $purchases = $this->stockService->listPurchases();
 
-        return view('Stock', ['products' => $purchases]);
+        return view('stock', ['products' => $purchases]);
     }
 
     /**

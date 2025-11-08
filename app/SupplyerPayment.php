@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Supplyerpayment extends Model
+class SupplyerPayment extends Model
 {
 
     /**
