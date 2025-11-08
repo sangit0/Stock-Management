@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Stock Management showcase</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -15,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('styleResource/bower_components/Ionicons/css/ionicons.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('css/everythingSangitCSS.css')}}">
+
+    @stack('styles')
 
     <style>
         #snackbar {
@@ -364,46 +367,65 @@
 
 
     <script>
-        $(function() {
-            dinamicMenu();
+        (function($, window, document) {
+            'use strict';
 
-            $(".spinner").css("display", "none");
+            const snackbarElement = document.getElementById('snackbar');
+            const spinnerElement = document.querySelector('.spinner');
 
-        });
+            /**
+             * Highlight the sidebar menu item that matches the current URL.
+             */
+            const activateSidebarMenu = () => {
+                const currentUrl = window.location.href;
 
-        $(document).ready(function() {
-            $(document).ajaxStart(function() {
-                $(".spinner").css("display", "block");
+                $('ul.sidebar-menu a').filter(function() {
+                    return this.href === currentUrl;
+                }).parent().addClass('active');
+
+                $('.treeview-menu li a').filter(function() {
+                    return this.href === currentUrl;
+                }).parents('li.treeview').addClass('active');
+            };
+
+            /**
+             * Toggle the global loading spinner visibility.
+             */
+            const toggleSpinner = (shouldShow) => {
+                if (!spinnerElement) {
+                    return;
+                }
+
+                spinnerElement.style.display = shouldShow ? 'block' : 'none';
+            };
+
+            /**
+             * Display a temporary toast-style notification.
+             */
+            window.showSnackbar = (message = 'Data updated successfully.') => {
+                if (!snackbarElement) {
+                    return;
+                }
+
+                snackbarElement.textContent = message;
+                snackbarElement.classList.add('show');
+
+                window.setTimeout(() => {
+                    snackbarElement.classList.remove('show');
+                }, 3000);
+            };
+
+            $(document).ready(() => {
+                activateSidebarMenu();
+                toggleSpinner(false);
+
+                $(document).ajaxStart(() => toggleSpinner(true));
+                $(document).ajaxStop(() => toggleSpinner(false));
             });
-            $(document).ajaxComplete(function() {
-                $(".spinner").css("display", "none");
-            });
-
-        });
-
-        function showSnakBar() {
-            var x = document.getElementById("snackbar")
-            x.className = "show";
-            setTimeout(function() {
-                x.className = x.className.replace("show", "");
-            }, 3000);
-        }
-
-        function dinamicMenu() {
-            var url = window.location;
-
-            $('ul.sidebar-menu a').filter(function() {
-                return this.href == url;
-            }).parent().addClass('active');
-
-            // Will only work if string in href matches with location
-            $('.treeview-menu li a[href="' + url + '"]').parent().addClass('active');
-            // Will also work for relative and absolute hrefs
-            $('.treeview-menu li a').filter(function() {
-                return this.href == url;
-            }).parent().parent().parent().addClass('active');
-        };
+        })(window.jQuery, window, document);
     </script>
+
+    @stack('scripts')
 </body>
 
 </html>
