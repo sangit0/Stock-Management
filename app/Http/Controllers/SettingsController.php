@@ -11,8 +11,6 @@ use App\Supplyer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use DB;
-use Session;
-session_start();
 
 class SettingsController extends Controller
 {
@@ -41,42 +39,38 @@ public function index() {
 // brand controller functions
  public function save_brand(Request $request) {
 
-         $data = array();
-             $data['name'] = $request->name;
-             DB::table('products_brand')->insert($data);
+        $data = array();
+            $data['name'] = $request->name;
+            DB::table('products_brand')->insert($data);
 
-             Session::put('message', 'Information is saved Successfully !');
-                       return Redirect::back();
+                      return Redirect::back()->with('message', 'Information is saved Successfully !');
 
  }
 
  public function published_brand($ID) {
      DB::table('products_brand')
              ->where('ID', $ID)
-             ->update(['publication_status' => 1]);
+            ->update(['publication_status' => 1]);
 
-             Session::put('message', 'Information is saved Successfully !');
-                       return Redirect::back();
+                      return Redirect::back()->with('message', 'Information is saved Successfully !');
  }
 
 
  public function unpublished_brand($ID) {
                  DB::table('products_brand')
-             ->where('ID', $ID)
-             ->update(['publication_status' => 0]);
-             Session::put('message', 'Information is saved Successfully !');
-                       return Redirect::back();
+            ->where('ID', $ID)
+            ->update(['publication_status' => 0]);
+                      return Redirect::back()->with('message', 'Information is saved Successfully !');
  }
 
  public function update_brand_info(Request $request) {
             $data = array();
-            $data['name'] = $request->name;
-                DB::table('products_brand')
-                      ->where('ID', $request->ID)
-                      ->update($data);
+           $data['name'] = $request->name;
+               DB::table('products_brand')
+                     ->where('ID', $request->ID)
+                     ->update($data);
 
-                      Session::put('message', 'Information is saved Successfully !');
-                      return Redirect::back();
+                     return Redirect::back()->with('message', 'Information is saved Successfully !');
 					  }
 
 }
