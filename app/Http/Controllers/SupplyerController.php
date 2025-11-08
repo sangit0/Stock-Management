@@ -2,174 +2,173 @@
 
 namespace App\Http\Controllers;
 
-use App\Brand;
+use App\Http\Requests\StoreSupplierPaymentRequest;
+use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Requests\UpdateSupplierRequest;
+use App\Services\SupplierService;
 use App\StockPurchase;
-use App\Supplyer;
-use App\Supplyerpayment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use DB;
-use Session;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class SupplyerController extends Controller
 {
     /**
+     * @var \App\Services\SupplierService
+     */
+    protected $supplierService;
+
+    /**
      * Create a new controller instance.
      *
+     * @param  \App\Services\SupplierService  $supplierService
      * @return void
      */
-    public function __construct() {
-
+    public function __construct(SupplierService $supplierService)
+    {
+        $this->supplierService = $supplierService;
     }
 
     /**
-     * Show the application dashboard.
+     * Display a listing of suppliers.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): View
     {
-        $supplyer = Supplyer::all();
+        $supplyer = $this->supplierService->getAllSuppliers();
 
-
-        return view('Supplyer',compact('supplyer'));
-
-    }
-    public function view_supplyer($ID) {
-        $supplyer = Supplyer::find($ID);
-        return $supplyer;
-    }
-    public function update_info(Request $request) {
-        $data = array();
-        if($request->cat!=-1)
-        $data['type'] = $request->cat;
-
-        $data['contact'] = $request->phone;
-        $data['Adress'] = $request->adress;
-        $data['name'] = $request->name;
-        $data['total_balance'] = $request->balance;
-        $data['paid'] = $request->paid;
-
-        Supplyer::where('id',$request->ID)
-        ->update($data);
-
-
-
-        Session::put('message','Save information successfully');
-        return Redirect::back();
-    }
-    public function published_supplyer($ID) {
-
-        Supplyer::find($ID)->update(['publication_status' => 1]);
-
-        return Redirect::to('supplyer');
+        return view('Supplyer', compact('supplyer'));
     }
 
-    public function unpublished_supplyer($ID) {
-        Supplyer::find($ID)->update(['publication_status' => 0]);
-
-        return Redirect::to('supplyer');
-    }
-
-    public function save_supplyer(Request $request) {
-
-            $data = new Supplyer();
-
-            if($request->cat==-1) {
-                Session::put('info', 'Error! please select supplyer type!');
-                return Redirect::to('supplyer');
-
-            }
-
-            $data['type'] = $request->cat;
-            $data['name'] = $request->name;
-            $data['total_balance'] = $request->balance;
-            $data['paid'] = $request->paid;
-            $data['contact'] = $request->phone;
-            $data['Adress'] = $request->adress;
-            $data['publication_status'] = 1;
-
-            $data->save();
-
-
-             Session::put('message', 'Save Information Successfully !');
-            return Redirect::to('supplyer');
-
-    }
-    public function save_supplyerAJAX(Request $request) {
-
-        $data = new Supplyer();
-
-        $data['type'] = $request->cat;
-        $data['name'] = $request->name;
-        $data['total_balance'] = $request->balance;
-        $data['paid'] = $request->paid;
-        $data['contact'] = $request->phone;
-        $data['Adress'] = $request->address;
-        $data['publication_status'] = 1;
-
-        $data->save();
-    }
-    public function getAllsupplyer(){
-        $all_published_Supplyer = \App\Supplyer::all()->where('publication_status',1);
-        return $all_published_Supplyer;
-
-    }
-    public function paymentDetails($ID)
+    /**
+     * Display the specified supplier.
+     *
+     * @param  int  $ID
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function view_supplyer(int $ID): JsonResponse
     {
-        $supplyerPayment =  Supplyerpayment::where('boxID',$ID)->with('supplyer')->with('paymentMethod')->get();
-       return $supplyerPayment;
+        $supplier = $this->supplierService->findSupplier($ID);
 
-
+        return response()->json($supplier);
     }
-    public function viewPayment()
+
+    /**
+     * Update the specified supplier in storage.
+     *
+     * @param  \App\Http\Requests\UpdateSupplierRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update_info(UpdateSupplierRequest $request): RedirectResponse
     {
-        $stock = StockPurchase::with('supplyer')->orderBy('statusPaid','asc')->get();
+        $supplier = $this->supplierService->findSupplier((int) $request->input('ID'));
+        $this->supplierService->updateSupplier($supplier, $request->validated());
 
-        // return $products;
-
-        return view('SupplyerPayment',compact('stock'));
-
-    }
-    public function save_supplyer_payment(Request $request) {
-
-
-        $data = new Supplyerpayment();
-
-        $data['amount'] = $request->data['newpaid'];
-        $data['supplyersID'] = $request->data['supplyerID'];
-        $data['paymentMethod'] = $request->data['paymentMethod'];
-        $data['boxID'] = $request->data['ID'];
-        if($data['remarks']!="")
-        $data['remarks'] = $request->data['remarks'];
-
-        $total_paid = $request->data['paid']+$data['amount'];
-
-        $data->save();
-
-        $supplyerB = Supplyer::find($data['supplyersID']);
-
-        $supplyer = Supplyer::where('id', $data['supplyersID'])
-            ->update(['paid' => $supplyerB->paid+ $data['amount']]);
-
-
-        if($request->data['total']==$total_paid) {
-            $dataStock = array();
-            $dataStock['statusPaid'] = 0;
-
-            StockPurchase::where('boxID',$data['boxID'])->update($dataStock);
-        }
-        else{
-            $dataStock = array();
-            $dataStock['statusPaid'] = -1;
-
-            StockPurchase::where('boxID',$data['boxID'])->update($dataStock);
-        }
-
-
+        return redirect()->back()->with('message', 'Save information successfully');
     }
 
+    /**
+     * Mark the supplier as published.
+     *
+     * @param  int  $ID
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function published_supplyer(int $ID): RedirectResponse
+    {
+        $supplier = $this->supplierService->findSupplier($ID);
+        $this->supplierService->setPublicationStatus($supplier, true);
 
+        return redirect()->route('SupplyerMangement');
+    }
 
+    /**
+     * Mark the supplier as unpublished.
+     *
+     * @param  int  $ID
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function unpublished_supplyer(int $ID): RedirectResponse
+    {
+        $supplier = $this->supplierService->findSupplier($ID);
+        $this->supplierService->setPublicationStatus($supplier, false);
 
+        return redirect()->route('SupplyerMangement');
+    }
+
+    /**
+     * Store a newly created supplier in storage.
+     *
+     * @param  \App\Http\Requests\StoreSupplierRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function save_supplyer(StoreSupplierRequest $request): RedirectResponse
+    {
+        $this->supplierService->createSupplier($request->validated());
+
+        return redirect()->route('SupplyerMangement')->with('message', 'Save Information Successfully !');
+    }
+
+    /**
+     * Store a newly created supplier via AJAX.
+     *
+     * @param  \App\Http\Requests\StoreSupplierRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function save_supplyerAJAX(StoreSupplierRequest $request): JsonResponse
+    {
+        $supplier = $this->supplierService->createSupplier($request->validated());
+
+        return response()->json($supplier, 201);
+    }
+
+    /**
+     * Retrieve all published suppliers.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllsupplyer(): JsonResponse
+    {
+        $publishedSuppliers = $this->supplierService->getPublishedSuppliers();
+
+        return response()->json($publishedSuppliers);
+    }
+
+    /**
+     * Retrieve payment details for the given purchase identifier.
+     *
+     * @param  int  $ID
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function paymentDetails(int $ID): JsonResponse
+    {
+        $supplyerPayment = $this->supplierService->getPaymentsForPurchase($ID);
+
+        return response()->json($supplyerPayment);
+    }
+
+    /**
+     * Display the supplier payment view.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function viewPayment(): View
+    {
+        $stock = StockPurchase::with('supplyer')->orderBy('statusPaid', 'asc')->get();
+
+        return view('SupplyerPayment', compact('stock'));
+    }
+
+    /**
+     * Store a supplier payment.
+     *
+     * @param  \App\Http\Requests\StoreSupplierPaymentRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function save_supplyer_payment(StoreSupplierPaymentRequest $request): JsonResponse
+    {
+        $payment = $this->supplierService->recordPayment($request->validated());
+
+        return response()->json($payment, 201);
+    }
 }
