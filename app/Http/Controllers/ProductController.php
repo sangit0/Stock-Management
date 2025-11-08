@@ -3,61 +3,106 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
-use App\Product;
-use App\ProductCategory;
+use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use DB;
-use Session;
 
 class ProductController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * @var ProductService
      */
-    public function __construct() {
+    protected $productService;
 
-
-    }
-
-
-    public function get()
+    /**
+     * Inject the service dependencies for the controller.
+     */
+    public function __construct(ProductService $productService)
     {
-        $products = ProductCategory::all();
-        return $products;
-
+        $this->productService = $productService;
     }
-    public function save(Request $request)
+
+    /**
+     * Return every product style for consumption by the settings screens.
+     */
+    public function get(): JsonResponse
     {
-        $style = new ProductCategory();
-        $style['name'] = $request->data;
-        $style->save();
+        $categories = $this->productService->listCategories();
 
+        return response()->json($categories);
     }
-    public function update(Request $request)
+
+    /**
+     * Persist a brand new product style.
+     */
+    public function save(Request $request): JsonResponse
     {
-        $id = $request->data['id'];
-        $name = $request->data['name'];
+        $validated = $request->validate([
+            'data' => 'required|string|max:255',
+        ]);
 
-        ProductCategory::find($id)->update(['name' => $name]);
+        $category = $this->productService->createCategory($validated['data']);
 
+        session()->flash('message', 'Product style created successfully!');
+
+        return response()->json([
+            'message' => 'Product style created successfully.',
+            'category' => $category,
+        ], 201);
     }
-    public function publish($ID)
+
+    /**
+     * Update the name of an existing product style.
+     */
+    public function update(Request $request): JsonResponse
     {
-        ProductCategory::find($ID)->update(['status' => 1]);
-        return Redirect::to('settings');
+        $validated = $request->validate([
+            'data.id' => 'required|integer|exists:productstyles,id',
+            'data.name' => 'required|string|max:255',
+        ]);
 
+        $category = $this->productService->renameCategory(
+            (int) $validated['data']['id'],
+            $validated['data']['name']
+        );
+
+        session()->flash('message', 'Product style updated successfully!');
+
+        return response()->json([
+            'message' => 'Product style updated successfully.',
+            'category' => $category,
+        ]);
     }
-    public function unpublish($ID)
+
+    /**
+     * Mark the product style as published.
+     */
+    public function publish(int $id): RedirectResponse
     {
-        ProductCategory::find($ID)->update(['status' => 0]);
-        return Redirect::to('settings');
+        $this->productService->setCategoryPublication($id, true);
 
+        return Redirect::to('settings')->with('message', 'Product style published successfully!');
     }
-    public function getProductAll(){
-        $all_published_product = \App\Product::where('availableQty','!=',0)->with(['brand','styles','stockID'])->get();
-        return $all_published_product;
+
+    /**
+     * Mark the product style as unpublished.
+     */
+    public function unpublish(int $id): RedirectResponse
+    {
+        $this->productService->setCategoryPublication($id, false);
+
+        return Redirect::to('settings')->with('message', 'Product style unpublished successfully!');
+    }
+
+    /**
+     * Retrieve all available products for selection during sales.
+     */
+    public function getProductAll(): ProductResource
+    {
+        $products = $this->productService->listAvailableProducts();
+
+        return new ProductResource($products);
     }
 }

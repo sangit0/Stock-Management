@@ -2,138 +2,138 @@
 
 namespace App\Http\Controllers;
 
-use App\Brand;
 use App\Http\Requests\StorePurchaseRequest;
 use App\Http\Requests\UpdatePurchaseRequest;
-use App\Product;
-use App\ProductCategory;
 use App\Services\PurchaseService;
-use App\StockPurchase;
-use App\Supplyer;
-use App\Supplyerpayment;
-
+use App\Services\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use PDF;
-use Session;
 
 class StockController extends Controller
 {
+    /**
+     * @var PurchaseService
+     */
     protected $purchaseService;
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * @var StockService
      */
-    public function __construct(PurchaseService $purchaseService) {
+    protected $stockService;
+
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct(PurchaseService $purchaseService, StockService $stockService)
+    {
         $this->purchaseService = $purchaseService;
+        $this->stockService = $stockService;
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
+     * Show the stock purchase entry form.
      */
     public function index()
     {
-        $products = ProductCategory::all();
-        $brand = Brand::all();
-        return view('add_purchase',compact('products'),compact('brand'));
+        $formData = $this->stockService->getPurchaseFormData();
 
+        return view('add_purchase', [
+            'products' => $formData['categories'],
+            'brand' => $formData['brands'],
+        ]);
     }
-    public function save_purchase(StorePurchaseRequest $request): JsonResponse {
+
+    /**
+     * Persist a brand-new purchase and return the stored record.
+     */
+    public function save_purchase(StorePurchaseRequest $request): JsonResponse
+    {
         $purchase = $this->purchaseService->createPurchase($request->validated());
 
-        Session::put('message', 'Purchase Successfully !');
+        Session::flash('message', 'Purchase Successfully !');
 
         return response()->json([
             'message' => 'Purchase created successfully.',
             'purchase' => $purchase,
         ], 201);
-
     }
-    public function save_purchaseOLD(UpdatePurchaseRequest $request): JsonResponse {
+
+    /**
+     * Append products to an existing purchase invoice.
+     */
+    public function save_purchaseOLD(UpdatePurchaseRequest $request): JsonResponse
+    {
         $purchase = $this->purchaseService->appendProducts($request->validated());
 
         return response()->json([
             'message' => 'Purchase updated successfully.',
             'purchase' => $purchase,
         ]);
-
     }
+
+    /**
+     * Display a listing of recorded stock purchases.
+     */
     public function view()
     {
-        $products = StockPurchase::with('supplyer')->orderBy('boxID','desc')->get();
+        $purchases = $this->stockService->listPurchases();
 
-       // return $products;
-
-        return view('Stock',compact('products'));
-
+        return view('Stock', ['products' => $purchases]);
     }
-    public function pdf($ID){
-        $Invoice = StockPurchase::with(['products.styles','supplyer'])->where('boxID',$ID)->get();
-        $paymenthist= Supplyerpayment::where('boxID',$ID)->sum('amount');
-        //return view("PDF.pdfstock",compact(['Invoice','paymenthist']));
 
-        $pdf = PDF::loadView('PDF.pdfstock',compact(['Invoice','paymenthist']));
-        return $pdf->stream('Purchase_invoice_'.$ID.'.pdf');
+    /**
+     * Stream the generated PDF invoice for the requested purchase.
+     */
+    public function pdf($ID)
+    {
+        $invoiceData = $this->stockService->getInvoiceData((int) $ID);
+
+        $pdf = PDF::loadView('PDF.pdfstock', [
+            'Invoice' => $invoiceData['invoice'],
+            'paymenthist' => $invoiceData['payments'],
+        ]);
+
+        return $pdf->stream('Purchase_invoice_' . $ID . '.pdf');
     }
+
+    /**
+     * Return the products associated with a purchase invoice.
+     */
     public function viewDetails($ID)
     {
-        $products = Product::where('boxID',$ID)->with(['brand','styles'])->get();
+        $products = $this->stockService->getPurchaseProducts((int) $ID);
 
-         //return $products;
-
-        return $products;
-
+        return response()->json($products);
     }
-    public function updateproductDetails(Request $request)
+
+    /**
+     * Update a product row and keep the related purchase consistent.
+     */
+    public function updateproductDetails(Request $request): JsonResponse
     {
-        $input = $request->all();
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.invoiceID' => 'required|integer',
+            'data.pID' => 'required|integer',
+            'data.saleQuantity' => 'required|integer',
+            'data.Purchase' => 'required|integer',
+            'data.salePrice' => 'required|numeric',
+            'data.color' => 'nullable|string|max:255',
+            'data.size' => 'nullable|string|max:255',
+            'data.style' => 'required|integer',
+            'data.pName' => 'required|string|max:255',
+            'data.oldQty' => 'required|integer',
+            'data.oldPrice' => 'required|numeric',
+        ]);
 
-        //  return $input['data'];
+        $this->stockService->updateProductDetails($validated);
 
-            $data = array();
-            $data['availableQty'] = $input['data']['saleQuantity'];
-            $data['quantity'] = $input['data']['Purchase'];
-            $data['price'] = $input['data']['salePrice'];
-            $data['color'] = $input['data']['color'];
-            $data['size'] = $input['data']['size'];
-            $data['styleID'] = $input['data']['style'];
-            $data['pName'] = $input['data']['pName'];
+        Session::flash('message', 'Stock Invoice#' . $validated['data']['invoiceID'] . ' Updated Successfully!');
 
-            $total = ceil($input['data']['Purchase'] * $input['data']['salePrice']);
-
-            $totalOLD = ceil($input['data']['oldQty'] * $input['data']['oldPrice']);
-
-
-            Product::where('ID', $input['data']['pID'])->update($data);
-
-            $dataPurchase = StockPurchase::where('boxID',$input['data']['invoiceID'])->get();
-            //return $dataPurchase[0]->price;
-            if($totalOLD>=$total){
-            StockPurchase::where('boxID', $input['data']['invoiceID'])
-            ->update(['price' => $dataPurchase[0]->price - ($totalOLD- $total),
-            'availableStock' => $dataPurchase[0]->availableStock - ($input['data']['oldQty']-$input['data']['Purchase'])]);
-            }
-            else{
-                StockPurchase::where('boxID', $input['data']['invoiceID'])
-                    ->update(['price' => $dataPurchase[0]->price - ($totalOLD- $total),'statusPaid'=>-1,
-                        'availableStock' => $dataPurchase[0]->availableStock - ($input['data']['oldQty']-$input['data']['Purchase'])]);
-            }
-
-            $supplyer = Supplyer::find($dataPurchase[0]->supplyerID);
-            Supplyer::where('id', $dataPurchase[0]->supplyerID)
-                ->update(['total_balance' => $supplyer->total_balance - ($totalOLD - $total)]
-                );
-
-
-            Session::put('message', 'Stock Invoice#' . $input['data']['invoiceID'] . ' Updated Successfully!');
-
-
-
+        return response()->json([
+            'message' => 'Stock invoice updated successfully.',
+        ]);
     }
-
-
 }
